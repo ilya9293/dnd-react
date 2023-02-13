@@ -14,32 +14,39 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-.field {
-  width: 800px;
-  height: 100px;
-  /* border: 2px solid black; */
+.wordsBox {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 30px;
+  background-color: #cccccc;
+  gap: 20px;
+}
+.words {
+  padding: 10px 20px;
+  background-color: #d9fe94;
   border-radius: 10px;
-  margin: 0 auto 50px;
+}
+.dropBox {
   display: flex;
-  justify-content: space-between;
+
+  justify-content: center;
+  align-items: stretch;
+  padding: 30px;
+  background-color: tomato;
+  min-height: 200px;
+}
+.replacedWordsBox {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-self: center;
+  gap: 20px;
 }
 
-.part {
-  flex-basis: 25%;
-  border: 1px solid black;
-  border-radius: 5px;
-  font-size: 25px;
+.replacedWordsBoxSpan {
+  flex-grow: 1;
   text-align: center;
-}
-
-.container {
-  width: 800px;
-  display: flex;
-  justify-content: space-evenly;
-  margin: auto;
-}
-
-.word {
-  font-size: 25px;
-  cursor: grab;
+  padding-top: 5%;
+  font-size: 20px;
 }

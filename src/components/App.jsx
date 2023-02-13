@@ -1,93 +1,114 @@
-import PropTypes from 'prop-types';
 import { useState } from 'react';
 
+const text = 'Я хочу работать программистом';
+
+const formInitialState = (text = '') =>
+  text.split(' ').map((word, index) => ({ id: String(index), word }));
+
 const App = () => {
-  const [parts, setParts] = useState([
-    { order: 1, wordBox: '' },
-    { order: 2, wordBox: '' },
-    { order: 3, wordBox: '' },
-    { order: 4, wordBox: '' },
-  ]);
+  const [words, setWords] = useState(() => formInitialState(text));
+  const [replacedWords, setReplacedWords] = useState([]);
+  const [selectedWord, setSelectedWord] = useState(null);
 
-  const [words, setWords] = useState([
-    { id: 1, word: 'Я' },
-    { id: 2, word: 'хочу' },
-    { id: 3, word: 'работать' },
-    { id: 4, word: 'программистом' },
-  ]);
-
-  const [saveWord, setSaveWord] = useState('');
-
-  //   const [memory, setMemory] = useState(null);
-
-  const handleDragStart = (e, word) => {
-    setSaveWord(word);
-    //  setWords(el => console.log(el));
-    //  setMemory(e.target);
-    //  console.log(e.target.dataset.id);
-    //  console.log('drugstart', id);
+  const onDragStart = id => () => {
+    setSelectedWord(words.find(word => word.id === id));
   };
 
-  const handleDragLeave = e => {};
-
-  const handleDragEnd = e => {};
-
-  const handleDragOver = e => {
+  const onBoxDragOver = e => {
     e.preventDefault();
   };
 
-  const handleDrop = (e, order) => {
+  const onDropBox = e => {
+    if (!selectedWord) return;
     e.preventDefault();
-    const filteredWords = words.filter(({ id, word }) => word !== saveWord);
-    setWords(filteredWords);
-    //  console.log('drop', order);
-    //  console.dir(memory);
-    //  e.target.append(memory);
+
+    setReplacedWords(prev => [...prev, selectedWord]);
+    setWords(prev => prev.filter(word => word.id !== selectedWord.id));
+    setSelectedWord(null);
+  };
+
+  const onDropSpan = (e, before = false) => {
+    if (!selectedWord) return;
+    e.preventDefault();
+
+    setReplacedWords(prev =>
+      !before ? [...prev, selectedWord] : [selectedWord, ...prev]
+    );
+    setWords(prev => prev.filter(word => word.id !== selectedWord.id));
+    setSelectedWord(null);
+  };
+
+  const chekIds = () => {
+    if (!replacedWords.length === 4) {
+      return false;
+    }
+    const numbers = replacedWords.map(el => el.id);
+    return numbers.join('') === '0123';
+  };
+
+  const handleDragBoxSpan = id => {
+    setSelectedWord(replacedWords.find(word => word.id === id));
   };
 
   return (
     <>
-      <div className="field">
-        {parts.map(({ order, wordBox }) => (
-          <div
-            key={order}
-            className="part"
-            data-order={order}
-            onDragOver={e => handleDragOver(e)}
-            onDrop={e => handleDrop(e, order)}
-          >
-            {wordBox}
-          </div>
-        ))}
+      <div className="wordsBox">
+        {!!words.length &&
+          words.map(({ id, word }) => (
+            <span
+              className="words"
+              key={id}
+              draggable={true}
+              onDragStart={onDragStart(id)}
+            >
+              {word}
+            </span>
+          ))}
+        {chekIds() && <p className="words">Готово!!!</p>}
+        {!words.length && !chekIds() && (
+          <p className="words">Поменяй порядок!!!</p>
+        )}
       </div>
-      <div className="container">
-        {words.map(({ id, word }) => (
-          <div
-            key={id}
-            className="word"
-            data-id={id}
-            draggable={true}
-            onDragStart={e => handleDragStart(e, word)}
-            onDragLeave={e => handleDragLeave(e)}
-            onDragEnd={e => handleDragEnd(e)}
-          >
-            {word}
-          </div>
-        ))}
 
-        {/* {words.map(({ id, word }) => (
-          <div
-            key={id}
-            className="word"
-            data-id={id}
-            draggable={true}
-            onDragStart={e => handleDragStart(e, id)}
-            onDragLeave={e => handleDragLeave(e)}
-            onDragEnd={e => handleDragEnd(e)}
+      <div
+        className="dropBox"
+        style={{
+          backgroundColor: !chekIds() ? 'tomato' : '#00bd6b',
+        }}
+        onDrop={!replacedWords.length ? onDropBox : null}
+        onDragOver={!replacedWords.length ? onBoxDragOver : null}
+      >
+        {!!replacedWords.length && (
+          <span
+            className="replacedWordsBoxSpan"
+            onDrop={replacedWords.length ? e => onDropSpan(e, true) : null}
+            onDragOver={replacedWords.length ? onBoxDragOver : null}
           >
-            {word}
-          </div>
-        ))} */}
+            Перемещай сюда
+          </span>
+        )}
+
+        <div className="replacedWordsBox">
+          {!!replacedWords.length && (
+            <>
+              {replacedWords.map(({ id, word }) => (
+                <span className="words" key={id}>
+                  {word}
+                </span>
+              ))}
+            </>
+          )}
+          {!replacedWords.length && <p>Перемещай в этот контейнер слова</p>}
+        </div>
+        {!!replacedWords.length && (
+          <span
+            className="replacedWordsBoxSpan"
+            onDrop={replacedWords.length ? onDropSpan : null}
+            onDragOver={replacedWords.length ? onBoxDragOver : null}
+          >
+            Перемещай сюда
+          </span>
+        )}
       </div>
     </>
   );
