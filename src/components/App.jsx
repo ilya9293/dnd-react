@@ -46,10 +46,6 @@ const App = () => {
     return numbers.join('') === '0123';
   };
 
-  const handleDragBoxSpan = id => {
-    setSelectedWord(replacedWords.find(word => word.id === id));
-  };
-
   return (
     <>
       <div className="wordsBox">
